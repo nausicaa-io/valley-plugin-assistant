@@ -1,0 +1,8 @@
+{
+  "main": "src/provider.ts",
+  "packageKind": "ai-provider",
+  "icon": "ollama",
+  "capabilities": ["chat", "stream", "tools", "models", "status"],
+  "authentication": { "type": "none" },
+  "allowedOrigins": ["http://localhost:11434", "http://127.0.0.1:11434", "http://[::1]:11434"]
+}

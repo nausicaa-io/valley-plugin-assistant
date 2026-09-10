@@ -1,0 +1,9 @@
+{
+  "main": "src/provider.ts",
+  "packageKind": "ai-provider",
+  "icon": "anthropic",
+  "settingsUrl": "https://console.anthropic.com/settings/keys",
+  "capabilities": ["chat", "stream", "tools", "models", "vision-image", "vision-pdf"],
+  "authentication": { "type": "api-key", "placement": "header", "header": "x-api-key" },
+  "allowedOrigins": ["https://api.anthropic.com"]
+}

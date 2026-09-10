@@ -1,0 +1,9 @@
+{
+  "main": "src/provider.ts",
+  "packageKind": "ai-provider",
+  "icon": "gemini",
+  "settingsUrl": "https://aistudio.google.com/app/apikey",
+  "capabilities": ["chat", "stream", "tools", "models", "vision-image", "vision-pdf"],
+  "authentication": { "type": "api-key", "placement": "header", "header": "x-goog-api-key" },
+  "allowedOrigins": ["https://generativelanguage.googleapis.com"]
+}

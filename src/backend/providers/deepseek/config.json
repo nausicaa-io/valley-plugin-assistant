@@ -1,0 +1,9 @@
+{
+  "main": "src/provider.ts",
+  "packageKind": "ai-provider",
+  "icon": "deepseek",
+  "settingsUrl": "https://platform.deepseek.com/api_keys",
+  "capabilities": ["chat", "stream", "tools", "models", "balance"],
+  "authentication": { "type": "api-key", "placement": "bearer" },
+  "allowedOrigins": ["https://api.deepseek.com"]
+}

@@ -1,0 +1,10 @@
+export const CONFIG_DIR = '.valley'
+export const ASSISTANT_DIR = `${CONFIG_DIR}/assistant`
+export const ASSISTANT_PROVIDERS_DIR = `${ASSISTANT_DIR}/providers`
+export const ASSISTANT_PROVIDERS_LOCK_FILE = `${ASSISTANT_DIR}/providers.lock.json`
+export const ASSISTANT_HARNESS_DIR = `${ASSISTANT_DIR}/harness`
+export const ASSISTANT_HARNESS_SETTINGS_FILE = `${ASSISTANT_DIR}/harness-settings.json`
+export const ASSISTANT_HARNESS_RUNS_DIR = `${ASSISTANT_DIR}/harness-runs`
+export const ASSISTANT_HARNESS_CACHE_DIR = `${CONFIG_DIR}/cache/assistant/harness`
+export const SETTINGS_DOMAIN_FILES = { provider: `${ASSISTANT_DIR}/assistant.json` }
+export const PROVIDER_SECRETS_FILE = `${ASSISTANT_DIR}/provider-secrets.json`

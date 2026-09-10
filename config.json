@@ -1,0 +1,615 @@
+{
+  "icon": "chats",
+  "main": "runtime/index.js",
+  "uiSlots": {
+    "left_sidebar": "assistant.panel",
+    "right_sidebar": "assistant.sidebar",
+    "main_workspace": "assistant.page"
+  },
+  "slotDefaults": {
+    "left_sidebar": {
+      "order": 30
+    },
+    "right_sidebar": {
+      "order": 20
+    }
+  },
+  "panelCommand": "open",
+  "settingsView": "assistant.settings",
+  "settingsSections": [
+    {
+      "id": "chat",
+      "label": "Chat",
+      "labelKey": "plugin.assistant.section.chat",
+      "icon": "chat",
+      "description": "Your in-app conversations: the personality, model and attachment parser every new chat starts from, how the composer behaves, the slash-commands that apply to every chat, and each saved conversation's own settings. Saved threads live in Meadow/Chorus/Chats.",
+      "storage": [
+        "Meadow/Chorus/Chats"
+      ],
+      "descriptionKey": "auto.d39f9be319d6"
+    },
+    {
+      "id": "telegram",
+      "label": "Telegram",
+      "labelKey": "plugin.assistant.section.telegram",
+      "icon": "send",
+      "description": "Talk to the assistant from outside the app over Telegram. Add one connection per bot; each carries its own token, allow-list, instructions, router and commands. The app must be open to handle messages.",
+      "descriptionKey": "auto.5bf6d99b1939",
+      "visibleWhenSetting": "showTelegram"
+    },
+    {
+      "id": "whatsapp",
+      "label": "WhatsApp",
+      "labelKey": "plugin.assistant.section.whatsapp",
+      "icon": "whatsapp",
+      "description": "Talk to the assistant from outside the app over an official WhatsApp Business Platform / Cloud API number — no Twilio, no WhatsApp Web bridge, no managed tunnel. The app must be open to handle messages.",
+      "descriptionKey": "auto.9719ca7e71e4",
+      "visibleWhenSetting": "showWhatsApp"
+    },
+    {
+      "id": "providers",
+      "label": "AI Providers",
+      "labelKey": "settings.section.aiProviders",
+      "description": "Manage model connections, credentials and base URLs. Each connection has its own name and model list.",
+      "descriptionKey": "assistant.settings.providersDescription",
+      "icon": "brain-circuit",
+      "storage": [
+        ".valley/assistant/assistant.json"
+      ]
+    },
+    {
+      "id": "usage",
+      "label": "Usage & Billing",
+      "labelKey": "settings.section.usage",
+      "description": "Review tokens, costs and balances for Assistant connections. Usage records stay encrypted on this device.",
+      "descriptionKey": "assistant.settings.usageDescription",
+      "icon": "wallet"
+    },
+    {
+      "id": "harnesses",
+      "label": "Harnesses",
+      "labelKey": "settings.section.harnesses",
+      "descriptionKey": "settings.harnesses.purpose",
+      "icon": "flask-conical",
+      "description": "Discover, configure, edit, and run vault-local AI evaluation packages against selected models.",
+      "storage": [
+        ".valley/assistant/harness-settings.json"
+      ]
+    }
+  ],
+  "drivers": [
+    "notes",
+    "files"
+  ],
+  "provides": [
+    {
+      "id": "guard.runtime",
+      "kind": "service",
+      "version": "1.0.0"
+    },
+    {
+      "id": "workspace.surface",
+      "kind": "extension",
+      "version": "1.0.0"
+    },
+    {
+      "id": "metadataPanel.segment",
+      "kind": "extension",
+      "version": "1.0.0"
+    }
+  ],
+  "consumes": [
+    {
+      "id": "agent.toolProvider",
+      "kind": "service",
+      "range": "^1.0.0",
+      "optional": true
+    }
+  ],
+  "guardPresets": {
+    "schemaVersion": 1,
+    "defaultPreset": "recommended",
+    "presets": [
+      {
+        "id": "recommended",
+        "label": "Recommended",
+        "version": 1,
+        "description": "Reads are free; file writes, deletes and command runs confirm. Secrets are always blocked.",
+        "entries": {
+          "tools": {
+            "write_file": {
+              "decision": "confirm",
+              "allowPreApproval": false
+            },
+            "delete_file": {
+              "decision": "confirm",
+              "allowPreApproval": false
+            },
+            "write_note": {
+              "decision": "confirm",
+              "allowPreApproval": false
+            },
+            "delete_note": {
+              "decision": "confirm",
+              "allowPreApproval": false
+            },
+            "write_rule": {
+              "decision": "confirm",
+              "allowPreApproval": false
+            },
+            "set_setting": {
+              "decision": "confirm",
+              "allowPreApproval": false
+            },
+            "run_command": {
+              "decision": "confirm",
+              "allowPreApproval": false
+            }
+          }
+        }
+      },
+      {
+        "id": "read-only",
+        "label": "Read-only",
+        "version": 1,
+        "description": "The assistant can read and answer, but never write or run commands.",
+        "entries": {
+          "tools": {
+            "write_file": {
+              "decision": "deny"
+            },
+            "delete_file": {
+              "decision": "deny"
+            },
+            "write_note": {
+              "decision": "deny"
+            },
+            "delete_note": {
+              "decision": "deny"
+            },
+            "write_rule": {
+              "decision": "deny"
+            },
+            "set_setting": {
+              "decision": "deny"
+            },
+            "run_command": {
+              "decision": "deny"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "settingsSchema": {
+    "fields": [
+      {
+        "key": "attachmentFolder",
+        "label": "Attachment folder",
+        "labelKey": "auto.b31da2770f6e",
+        "type": "text",
+        "description": "Where files you attach in a chat are saved in the vault",
+        "descriptionKey": "auto.c4eea020917e",
+        "validate": "vault-folder",
+        "section": "chat",
+        "default": "Meadow/Chorus/Chats/inbox"
+      }
+    ]
+  },
+  "locales": {
+    "en": "runtime/locales/en.json",
+    "de": "runtime/locales/de.json",
+    "es": "runtime/locales/es.json",
+    "fr": "runtime/locales/fr.json",
+    "zh-CN": "runtime/locales/zh-CN.json"
+  },
+  "connectionProviders": [
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "description": "Anthropic Claude chat provider",
+      "icon": "anthropic",
+      "baseUrl": "https://api.anthropic.com/v1",
+      "capabilities": [
+        "ai.chat",
+        "ai.stream",
+        "ai.tools",
+        "ai.models",
+        "ai.vision-image",
+        "ai.vision-pdf"
+      ],
+      "requiresKey": true,
+      "environmentKeys": [
+        "ANTHROPIC_API_KEY"
+      ],
+      "connectionSource": {
+        "config": ".valley/assistant/assistant.json",
+        "secrets": ".valley/assistant/provider-secrets.json",
+        "keyPrefix": "provider:"
+      }
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "description": "DeepSeek chat and balance provider",
+      "icon": "deepseek",
+      "baseUrl": "https://api.deepseek.com/v1",
+      "capabilities": [
+        "ai.chat",
+        "ai.stream",
+        "ai.tools",
+        "ai.models",
+        "ai.balance"
+      ],
+      "requiresKey": true,
+      "environmentKeys": [
+        "DEEPSEEK_API_KEY"
+      ],
+      "connectionSource": {
+        "config": ".valley/assistant/assistant.json",
+        "secrets": ".valley/assistant/provider-secrets.json",
+        "keyPrefix": "provider:"
+      }
+    },
+    {
+      "id": "gemini",
+      "name": "Google Gemini",
+      "description": "Google Gemini chat provider",
+      "icon": "gemini",
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
+      "capabilities": [
+        "ai.chat",
+        "ai.stream",
+        "ai.tools",
+        "ai.models",
+        "ai.vision-image",
+        "ai.vision-pdf"
+      ],
+      "requiresKey": true,
+      "environmentKeys": [
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY"
+      ],
+      "connectionSource": {
+        "config": ".valley/assistant/assistant.json",
+        "secrets": ".valley/assistant/provider-secrets.json",
+        "keyPrefix": "provider:"
+      }
+    },
+    {
+      "id": "kimi",
+      "name": "Kimi",
+      "description": "Moonshot Kimi chat and balance provider",
+      "icon": "kimi",
+      "baseUrl": "https://api.moonshot.ai/v1",
+      "capabilities": [
+        "ai.chat",
+        "ai.stream",
+        "ai.tools",
+        "ai.models",
+        "ai.balance"
+      ],
+      "requiresKey": true,
+      "environmentKeys": [
+        "KIMI_API_KEY",
+        "MOONSHOT_API_KEY"
+      ],
+      "connectionSource": {
+        "config": ".valley/assistant/assistant.json",
+        "secrets": ".valley/assistant/provider-secrets.json",
+        "keyPrefix": "provider:"
+      }
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama",
+      "description": "Local Ollama chat provider",
+      "icon": "ollama",
+      "baseUrl": "http://localhost:11434",
+      "capabilities": [
+        "ai.chat",
+        "ai.stream",
+        "ai.tools",
+        "ai.models",
+        "ai.status",
+        "ai.embeddings"
+      ],
+      "requiresKey": false,
+      "environmentKeys": [],
+      "connectionSource": {
+        "config": ".valley/assistant/assistant.json",
+        "secrets": ".valley/assistant/provider-secrets.json",
+        "keyPrefix": "provider:"
+      }
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "description": "OpenAI chat and transcription provider",
+      "icon": "openai",
+      "baseUrl": "https://api.openai.com/v1",
+      "capabilities": [
+        "ai.chat",
+        "ai.stream",
+        "ai.tools",
+        "ai.models",
+        "ai.vision-image",
+        "ai.transcribe",
+        "ai.embeddings"
+      ],
+      "requiresKey": true,
+      "environmentKeys": [
+        "OPENAI_API_KEY"
+      ],
+      "connectionSource": {
+        "config": ".valley/assistant/assistant.json",
+        "secrets": ".valley/assistant/provider-secrets.json",
+        "keyPrefix": "provider:"
+      }
+    },
+    {
+      "id": "xai",
+      "name": "xAI",
+      "description": "xAI Grok chat provider",
+      "icon": "xai",
+      "baseUrl": "https://api.x.ai/v1",
+      "capabilities": [
+        "ai.chat",
+        "ai.stream",
+        "ai.tools",
+        "ai.models"
+      ],
+      "requiresKey": true,
+      "environmentKeys": [
+        "XAI_API_KEY",
+        "GROK_API_KEY"
+      ],
+      "connectionSource": {
+        "config": ".valley/assistant/assistant.json",
+        "secrets": ".valley/assistant/provider-secrets.json",
+        "keyPrefix": "provider:"
+      }
+    }
+  ],
+  "operationPolicy": {
+    "policy": ".valley/assistant/guards.json",
+    "audit": ".valley/assistant/guard-audit.jsonl"
+  },
+  "runtime": {
+    "ui": "runtime/index.js",
+    "backend": "runtime/backend.js",
+    "services": [
+      {
+        "id": "valley.text-embeddings",
+        "version": "1.0.0",
+        "method": "embeddings.compute",
+        "request": {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "texts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 64
+            }
+          },
+          "required": [
+            "provider",
+            "texts"
+          ],
+          "additionalProperties": false
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "vectors": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 16384
+              },
+              "maxItems": 64
+            }
+          },
+          "required": [
+            "model",
+            "vectors"
+          ],
+          "additionalProperties": false
+        },
+        "metadata": {
+          "providers": [
+            {
+              "id": "openai",
+              "label": "OpenAI",
+              "defaultModel": "text-embedding-3-small",
+              "labelKey": "connectionProviders.openai.name"
+            },
+            {
+              "id": "ollama",
+              "label": "Ollama",
+              "defaultModel": "nomic-embed-text",
+              "labelKey": "connectionProviders.ollama.name"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "assets": "runtime/assets",
+  "permissions": {
+    "network": {
+      "hosts": [
+        "api.telegram.org",
+        "graph.facebook.com",
+        "lookaside.fbsbx.com",
+        "api.anthropic.com",
+        "api.deepseek.com",
+        "generativelanguage.googleapis.com",
+        "api.moonshot.ai",
+        "localhost",
+        "api.openai.com",
+        "api.x.ai"
+      ],
+      "allowUserEndpoints": true,
+      "allowPrivate": true
+    },
+    "accounts": [
+      "ai.chat",
+      "ai.embeddings"
+    ],
+    "credentials": true,
+    "storage": {
+      "vault": true,
+      "metadata": [
+        "assistant",
+        "cache/assistant"
+      ]
+    },
+    "nativeTools": [
+      "markitdown"
+    ],
+    "incomingHttp": {
+      "ports": [
+        8787
+      ],
+      "allowUserPorts": true
+    },
+    "sealedData": [
+      {
+        "id": "usage",
+        "area": "privateInstall",
+        "path": "assistant/usage.json",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "entries": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "number"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "connectionId": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "inputTokens": {
+                    "type": "number"
+                  },
+                  "outputTokens": {
+                    "type": "number"
+                  },
+                  "costUsd": {
+                    "type": "number"
+                  },
+                  "origin": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "ts",
+                  "provider",
+                  "model",
+                  "inputTokens",
+                  "outputTokens",
+                  "costUsd",
+                  "origin"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 50000
+            },
+            "budget": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "entries",
+            "budget"
+          ],
+          "additionalProperties": false
+        }
+      }
+    ]
+  },
+  "commandAliases": {
+    "harness:list": "harness-list",
+    "harness:inspect": "harness-inspect",
+    "harness:reload": "harness-reload",
+    "harness:run": "harness-run",
+    "harness:cancel": "harness-cancel",
+    "harness:history": "harness-history",
+    "harness:clear-cache": "harness-clear-cache"
+  },
+  "storageInventory": [
+    {
+      "id": "harness-settings",
+      "kind": "files",
+      "store": "durable",
+      "location": {
+        "area": "metadata",
+        "path": "assistant/harness-settings.json"
+      },
+      "backup": false
+    },
+    {
+      "id": "harness-runs",
+      "kind": "directory",
+      "store": "durable",
+      "location": {
+        "area": "metadata",
+        "path": "assistant/harness-runs"
+      },
+      "backup": false
+    },
+    {
+      "id": "connections",
+      "kind": "files",
+      "store": "durable",
+      "location": {
+        "area": "metadata",
+        "path": "assistant/assistant.json"
+      }
+    },
+    {
+      "id": "provider-secrets",
+      "kind": "files",
+      "store": "durable",
+      "location": {
+        "area": "metadata",
+        "path": "assistant/provider-secrets.json"
+      }
+    },
+    {
+      "id": "channel-secrets",
+      "kind": "files",
+      "store": "durable",
+      "location": {
+        "area": "metadata",
+        "path": "assistant/secrets.json"
+      }
+    }
+  ]
+}

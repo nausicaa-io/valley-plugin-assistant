@@ -1,0 +1,11 @@
+{
+  "apiVersion": 3,
+  "id": "anthropic",
+  "name": "Anthropic",
+  "version": "1.0.0",
+  "description": "Anthropic Claude chat provider",
+  "author": [
+    "Valley"
+  ],
+  "enabled": true
+}

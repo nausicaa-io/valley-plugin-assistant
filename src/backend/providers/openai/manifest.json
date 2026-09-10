@@ -1,0 +1,11 @@
+{
+  "apiVersion": 3,
+  "id": "openai",
+  "name": "OpenAI",
+  "version": "1.0.0",
+  "description": "OpenAI chat and transcription provider",
+  "author": [
+    "Valley"
+  ],
+  "enabled": true
+}

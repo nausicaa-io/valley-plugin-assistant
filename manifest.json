@@ -1,0 +1,16 @@
+{
+  "apiVersion": 5,
+  "id": "assistant",
+  "name": "Assistant",
+  "version": "2.0.0",
+  "description": "Multi-provider agentic AI chat that can answer and act in the app: connect Anthropic, OpenAI, Gemini, DeepSeek, Kimi and local Ollama, orchestrate which model handles what, and reach it over Telegram and WhatsApp. Conducted by you via .valley/assistant.",
+  "author": [
+    "Yanik"
+  ],
+  "authorUrl": [
+    "https://github.com/yanik02"
+  ],
+  "isDesktopOnly": true,
+  "minAppVersion": "0.1.0",
+  "enabled": true
+}

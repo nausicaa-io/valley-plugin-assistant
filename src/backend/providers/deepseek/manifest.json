@@ -1,0 +1,11 @@
+{
+  "apiVersion": 3,
+  "id": "deepseek",
+  "name": "DeepSeek",
+  "version": "1.0.0",
+  "description": "DeepSeek chat and balance provider",
+  "author": [
+    "Valley"
+  ],
+  "enabled": true
+}

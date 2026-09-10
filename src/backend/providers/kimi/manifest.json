@@ -1,0 +1,11 @@
+{
+  "apiVersion": 3,
+  "id": "kimi",
+  "name": "Kimi",
+  "version": "1.0.0",
+  "description": "Moonshot Kimi chat and balance provider",
+  "author": [
+    "Valley"
+  ],
+  "enabled": true
+}

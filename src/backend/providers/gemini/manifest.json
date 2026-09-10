@@ -1,0 +1,11 @@
+{
+  "apiVersion": 3,
+  "id": "gemini",
+  "name": "Google Gemini",
+  "version": "1.0.0",
+  "description": "Google Gemini chat provider",
+  "author": [
+    "Valley"
+  ],
+  "enabled": true
+}

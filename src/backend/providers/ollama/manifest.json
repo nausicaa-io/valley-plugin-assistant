@@ -1,0 +1,11 @@
+{
+  "apiVersion": 3,
+  "id": "ollama",
+  "name": "Ollama",
+  "version": "1.0.0",
+  "description": "Local Ollama chat provider",
+  "author": [
+    "Valley"
+  ],
+  "enabled": true
+}

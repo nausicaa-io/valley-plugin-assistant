@@ -1,0 +1,11 @@
+{
+  "apiVersion": 3,
+  "id": "xai",
+  "name": "xAI",
+  "version": "1.0.0",
+  "description": "xAI Grok chat provider",
+  "author": [
+    "Valley"
+  ],
+  "enabled": true
+}

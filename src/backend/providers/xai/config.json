@@ -1,0 +1,9 @@
+{
+  "main": "src/provider.ts",
+  "packageKind": "ai-provider",
+  "icon": "xai",
+  "settingsUrl": "https://console.x.ai",
+  "capabilities": ["chat", "stream", "tools", "models"],
+  "authentication": { "type": "api-key", "placement": "bearer" },
+  "allowedOrigins": ["https://api.x.ai"]
+}

@@ -1,0 +1,9 @@
+{
+  "main": "src/provider.ts",
+  "packageKind": "ai-provider",
+  "icon": "kimi",
+  "settingsUrl": "https://platform.moonshot.ai/console/api-keys",
+  "capabilities": ["chat", "stream", "tools", "models", "balance"],
+  "authentication": { "type": "api-key", "placement": "bearer" },
+  "allowedOrigins": ["https://api.moonshot.ai", "https://api.moonshot.cn"]
+}

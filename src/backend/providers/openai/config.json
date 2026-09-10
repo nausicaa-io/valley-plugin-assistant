@@ -1,0 +1,9 @@
+{
+  "main": "src/provider.ts",
+  "packageKind": "ai-provider",
+  "icon": "openai",
+  "settingsUrl": "https://platform.openai.com/api-keys",
+  "capabilities": ["chat", "stream", "tools", "models", "vision-image", "transcription"],
+  "authentication": { "type": "api-key", "placement": "bearer" },
+  "allowedOrigins": ["https://api.openai.com"]
+}
