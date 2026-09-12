@@ -555,6 +555,7 @@
     ]
   },
   "commandAliases": {
+    "providers:reload": "providers-reload",
     "harness:list": "harness-list",
     "harness:inspect": "harness-inspect",
     "harness:reload": "harness-reload",
@@ -610,6 +611,26 @@
         "area": "metadata",
         "path": "assistant/secrets.json"
       }
+    },
+    {
+      "id": "chat-logs",
+      "kind": "directory",
+      "store": "durable",
+      "location": {
+        "area": "vault",
+        "path": "Meadow/Chorus/Chats"
+      },
+      "index": false
+    },
+    {
+      "id": "channel-logs",
+      "kind": "directory",
+      "store": "durable",
+      "location": {
+        "area": "vault",
+        "path": "Meadow/Chorus/Channels"
+      },
+      "index": false
     }
   ]
 }

@@ -512,5 +512,9 @@
   "assistant.backend.missingFile": "File does not exist: {{value}}",
   "assistant.backend.retryDelay": "retry.maxDelayMs must be at least retry.baseDelayMs",
   "assistant.backend.duplicateSetting": "Duplicate setting key: {{value}}",
-  "assistant.backend.settingSecret": "Harness settings cannot store credentials: {{value}}"
+  "assistant.backend.settingSecret": "Harness settings cannot store credentials: {{value}}",
+  "assistant.guard.confirmTitle": "Approve action",
+  "assistant.guard.confirmMessage": "Allow this action once: {{action}}?",
+  "assistant.command.reloadProviders": "Providers: Reload",
+  "assistant.providers.reloaded": "Providers reloaded: {{count}}."
 }

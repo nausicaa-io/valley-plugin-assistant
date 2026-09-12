@@ -161,6 +161,19 @@ describe('agent loop', () => {
     expect(mock.driverCalls.some((c) => c.driver === 'notes')).toBe(false)
   })
 
+  it.each(['relay-42', 'whatsapp-2'])('gates channel %s without encoding its adapter as a caller', async (channelId) => {
+    const mock = createMockValleyApi()
+    const requestApproval = vi.fn(async () => false)
+    const audit = vi.fn()
+    await run(mock, [{ role: 'user', content: 'write a note' }], scripted(mock, [
+      [{ type: 'tool_call', call: { id: 'c1', name: 'write_note', arguments: { path: 'n.md', content: 'x' } } }],
+      [{ type: 'text', text: 'Skipped.' }]
+    ]), { origin: 'channel', channel: { channelId, chatRef: 'remote-thread' }, conversationId: 'saved-thread', requestApproval, audit })
+    expect(requestApproval).toHaveBeenCalledWith(expect.objectContaining({ caller: 'channel', channelId }))
+    expect(audit).toHaveBeenCalledWith(expect.objectContaining({ caller: 'channel', channelId, chatId: 'saved-thread', decision: 'deny' }))
+    expect(mock.driverCalls.some((call) => call.driver === 'notes')).toBe(false)
+  })
+
   it('refuses workspace:save-active / workspace:deselect outright, never prompting for approval', async () => {
     const mock = createMockValleyApi({ manifest: { id: 'workspace' } })
     for (const id of ['save-active', 'deselect']) {

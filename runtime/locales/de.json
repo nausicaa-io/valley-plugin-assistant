@@ -512,5 +512,9 @@
   "assistant.backend.missingFile": "Datei existiert nicht: {{value}}",
   "assistant.backend.retryDelay": "retry.maxDelayMs muss mindestens retry.baseDelayMs sein",
   "assistant.backend.duplicateSetting": "Doppelter Einstellungsschlüssel: {{value}}",
-  "assistant.backend.settingSecret": "Harness-Einstellungen dürfen keine Zugangsdaten speichern: {{value}}"
+  "assistant.backend.settingSecret": "Harness-Einstellungen dürfen keine Zugangsdaten speichern: {{value}}",
+  "assistant.guard.confirmTitle": "Aktion bestätigen",
+  "assistant.guard.confirmMessage": "Diese Aktion einmal erlauben: {{action}}?",
+  "assistant.command.reloadProviders": "Anbieter: Neu laden",
+  "assistant.providers.reloaded": "Neu geladene Anbieter: {{count}}."
 }

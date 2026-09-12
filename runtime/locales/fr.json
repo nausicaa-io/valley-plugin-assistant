@@ -512,5 +512,9 @@
   "assistant.backend.missingFile": "Le fichier n’existe pas : {{value}}",
   "assistant.backend.retryDelay": "retry.maxDelayMs doit être au moins égal à retry.baseDelayMs",
   "assistant.backend.duplicateSetting": "Clé de paramètre dupliquée : {{value}}",
-  "assistant.backend.settingSecret": "Les paramètres de Harness ne peuvent pas stocker d’identifiants : {{value}}"
+  "assistant.backend.settingSecret": "Les paramètres de Harness ne peuvent pas stocker d’identifiants : {{value}}",
+  "assistant.guard.confirmTitle": "Autoriser l’action",
+  "assistant.guard.confirmMessage": "Autoriser cette action une fois : {{action}} ?",
+  "assistant.command.reloadProviders": "Fournisseurs : recharger",
+  "assistant.providers.reloaded": "Fournisseurs rechargés : {{count}}."
 }

@@ -15,7 +15,8 @@ export function useChartContainerResize(
   const isInitialObservation = useRef(true)
 
   useEffect(() => {
-    if (!chartContainerRef.current) return
+    const container = chartContainerRef.current
+    if (!container) return
     isInitialObservation.current = true
 
     const handleResize = (): void => {
@@ -27,8 +28,9 @@ export function useChartContainerResize(
       resizeTimeoutRef.current = setTimeout(() => setChanged((prev) => !prev), delay)
     }
 
-    resizeObserverRef.current = new ResizeObserver(handleResize)
-    resizeObserverRef.current.observe(chartContainerRef.current)
+    const Observer = container.ownerDocument.defaultView?.ResizeObserver ?? ResizeObserver
+    resizeObserverRef.current = new Observer(handleResize)
+    resizeObserverRef.current.observe(container)
 
     return () => {
       resizeObserverRef.current?.disconnect()

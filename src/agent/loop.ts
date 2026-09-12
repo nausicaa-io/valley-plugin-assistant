@@ -277,7 +277,7 @@ export async function runAgent(opts: RunAgentOptions): Promise<void> {
   // The shared rule set for this run. The caller maps the origin onto a guard
   // caller; the policy + dangerous mode come from the (live) config; lower layers
   // narrow it. Resolution is identical to what main enforces.
-  const caller: GuardCaller = opts.origin === 'channel' ? 'telegram' : 'agent'
+  const caller: GuardCaller = opts.origin === 'channel' ? 'channel' : 'agent'
   const policy: GuardPolicy = config.guard
   const layers = opts.guardLayers ?? {}
   const dangerous = config.guard.dangerousMode
@@ -293,7 +293,9 @@ export async function runAgent(opts: RunAgentOptions): Promise<void> {
       targetKind: target.kind,
       targetId: target.id,
       path: target.path,
-      fileOperation: target.fileOperation
+      fileOperation: target.fileOperation,
+      channelId: opts.channel?.channelId,
+      chatId: opts.conversationId
     })
 
   const draftFor = (target: GuardTarget, tool: AgentTool, args: Record<string, unknown>, canRemember: boolean): ApprovalDraft => ({
@@ -301,7 +303,8 @@ export async function runAgent(opts: RunAgentOptions): Promise<void> {
     target,
     actionLabel: tool.name,
     argsPreview: args,
-    canRememberApproval: canRemember
+    canRememberApproval: canRemember,
+    channelId: opts.channel?.channelId
   })
 
   /** Resolve, prompt (once) if needed, and run one tool call. */

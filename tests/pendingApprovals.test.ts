@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { ChannelMessage } from '../src/types'
 import type { RunAgentOptions } from '../src/agent/loop'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { initLocalization } from '../src/localization'
+import en from '../locales/en.json'
+import de from '../locales/de.json'
+import es from '../locales/es.json'
+import fr from '../locales/fr.json'
+import zhCN from '../locales/zh-CN.json'
 
 /**
  * The rich PermissionRequest store (C8): approvals carry a short requestId and an
@@ -41,7 +48,7 @@ const inbound = (text: string, chatRef: string, extra: Partial<ChannelMessage> =
   ...extra
 })
 const draft = (): Parameters<NonNullable<RunAgentOptions['requestApproval']>>[0] => ({
-  caller: 'telegram',
+  caller: 'channel',
   target: { kind: 'tool', id: 'write_note', sideEffect: 'write' },
   actionLabel: 'write_note',
   argsPreview: {},
@@ -95,6 +102,7 @@ describe('assistant store — pending approvals', () => {
     expect(pending.requestId).toBeTruthy()
     expect(pending.caller).toBe('agent')
     expect(pending.chatId).toBe(store.getSnapshot().active?.id)
+    expect(mock.api.ui.confirm).not.toHaveBeenCalled()
 
     store.respond(pending.requestId, 'skip')
     await until(() => store.getSnapshot().pending == null)
@@ -224,5 +232,76 @@ describe('assistant store — pending approvals', () => {
     mock.emitChannelMessage(inbound('', '5', { data: 'allow:rold' }))
     await until(() => sends(mock).some((t) => t.toLowerCase().includes('expired')))
     expect(sends(mock).some((t) => t.toLowerCase().includes('expired'))).toBe(true)
+  })
+})
+
+describe('assistant command-bus approvals', () => {
+  async function startWithoutConversation(mock: ReturnType<typeof createMockValleyApi>) {
+    initLocalization(mock.api)
+    const register = vi.spyOn(mock.api.guard, 'registerRuntime')
+    const store = getStore(mock.api)
+    vi.spyOn(store, 'newChat').mockImplementation(() => {})
+    await store.whenReady
+    expect(store.getSnapshot().active).toBeNull()
+    return { store, bridge: register.mock.calls[0][0] }
+  }
+
+  it.each([
+    ['en', en], ['de', de], ['es', es], ['fr', fr], ['zh-CN', zhCN]
+  ] as const)('shows an independent confirmation in %s and allows only this invocation', async (_language, catalog) => {
+    const mock = createMockValleyApi()
+    mock.api.ui.t = (key, params) => (catalog[key as keyof typeof catalog] ?? key)
+      .replace(/\{\{([^}]+)\}\}/g, (_match, name: string) => String(params?.[name] ?? ''))
+    const { store, bridge } = await startWithoutConversation(mock)
+    vi.mocked(mock.api.ui.confirm).mockResolvedValueOnce('allow-once').mockResolvedValueOnce(null)
+    const request = { ...draft(), caller: 'plugin' as const, pluginId: 'renamed-browser', actionLabel: 'Open example.com', argsPreview: { url: 'https://example.com' }, diffPreview: 'One browser tab', canRememberApproval: true }
+
+    await expect(bridge.requestApproval(request)).resolves.toBe(true)
+    await expect(bridge.requestApproval(request)).resolves.toBe(false)
+
+    expect(mock.api.ui.confirm).toHaveBeenCalledTimes(2)
+    const options = vi.mocked(mock.api.ui.confirm).mock.calls[0][0]
+    expect(options.title).toBe(catalog['assistant.guard.confirmTitle'])
+    expect(options.actions).toEqual([
+      { label: catalog['auto.77dfd2135f4d'], value: 'cancel', variant: 'ghost' },
+      { label: catalog['auto.c551e6cf17a5'], value: 'allow-once', variant: 'primary' }
+    ])
+    const message = renderToStaticMarkup(mock.api.React.createElement('div', null, options.message))
+    expect(message).toContain('Open example.com')
+    expect(message).toContain('https://example.com')
+    expect(message).toContain('One browser tab')
+    expect(store.getSnapshot().pending).toBeNull()
+    expect(mock.pendingApprovals.size).toBe(0)
+    expect(mock.guardOverrides.size).toBe(0)
+    expect(mock.driverCalls.some((call) => call.method === 'saveGuardOverrides')).toBe(false)
+  })
+
+  it.each(['cancel', null, 'unexpected'])('denies a %s response', async (choice) => {
+    const mock = createMockValleyApi()
+    const { bridge } = await startWithoutConversation(mock)
+    vi.mocked(mock.api.ui.confirm).mockResolvedValue(choice)
+    await expect(bridge.requestApproval(draft())).resolves.toBe(false)
+  })
+
+  it('denies when the shared confirmation fails', async () => {
+    const mock = createMockValleyApi()
+    const { bridge } = await startWithoutConversation(mock)
+    vi.mocked(mock.api.ui.confirm).mockRejectedValue(new Error('Surface unavailable'))
+    await expect(bridge.requestApproval(draft())).resolves.toBe(false)
+  })
+
+  it.each(['dispose', 'prepareUnload'] as const)('settles pending confirmations on %s and ignores late approval', async (transition) => {
+    const mock = createMockValleyApi()
+    const { store, bridge } = await startWithoutConversation(mock)
+    let choose!: (value: string) => void
+    vi.mocked(mock.api.ui.confirm).mockImplementation(() => new Promise((resolve) => { choose = resolve }))
+    const approval = bridge.requestApproval(draft())
+    await until(() => vi.mocked(mock.api.ui.confirm).mock.calls.length > 0)
+    await store[transition]()
+    await expect(approval).resolves.toBe(false)
+    choose('allow-once')
+    await expect(approval).resolves.toBe(false)
+    await expect(bridge.requestApproval(draft())).resolves.toBe(false)
+    expect(mock.api.ui.confirm).toHaveBeenCalledTimes(1)
   })
 })

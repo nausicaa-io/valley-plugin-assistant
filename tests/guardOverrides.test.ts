@@ -85,7 +85,7 @@ describe('assistant store — per-chat guard overrides', () => {
   it('a Telegram "block here" button persists a narrowing too', async () => {
     const mock = createMockValleyApi()
     hooks.impl = async (opts) => {
-      const ok = await opts.requestApproval({ ...draft(), caller: 'telegram' })
+      const ok = await opts.requestApproval({ ...draft(), caller: 'channel' })
       opts.onMessage({ role: 'assistant', content: ok ? 'did it' : 'blocked' })
     }
     const store = getStore(mock.api)

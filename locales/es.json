@@ -512,5 +512,9 @@
   "assistant.backend.missingFile": "El archivo no existe: {{value}}",
   "assistant.backend.retryDelay": "retry.maxDelayMs debe ser al menos retry.baseDelayMs",
   "assistant.backend.duplicateSetting": "Clave de ajuste duplicada: {{value}}",
-  "assistant.backend.settingSecret": "Los ajustes de Harness no pueden guardar credenciales: {{value}}"
+  "assistant.backend.settingSecret": "Los ajustes de Harness no pueden guardar credenciales: {{value}}",
+  "assistant.guard.confirmTitle": "Aprobar acción",
+  "assistant.guard.confirmMessage": "¿Permitir esta acción una vez: {{action}}?",
+  "assistant.command.reloadProviders": "Proveedores: Recargar",
+  "assistant.providers.reloaded": "Proveedores recargados: {{count}}."
 }

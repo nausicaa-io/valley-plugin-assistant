@@ -63,7 +63,7 @@ const harnessBaseline = z.object({ mtimeMs: z.number(), size: z.number(), hash: 
 
 const guardAuditEntry: z.ZodType<GuardAuditEntry> = z.object({
   ts: z.number(),
-  caller: z.enum(['palette', 'hotkey', 'agent', 'telegram', 'plugin']),
+  caller: z.enum(['palette', 'hotkey', 'agent', 'channel', 'plugin']),
   decision: z.enum(['allow', 'confirm', 'deny', 'bypass', 'expired', 'skipped']),
   source: z.enum(['hard-block', 'global-guard', 'profile', 'channel', 'chat', 'dangerous-mode', 'caller']),
   reason: z.string(),

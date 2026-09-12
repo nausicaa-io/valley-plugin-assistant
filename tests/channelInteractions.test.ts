@@ -39,7 +39,7 @@ const inbound = (text: string, extra: Partial<ChannelMessage> = {}): ChannelMess
 const fakeTool: AgentTool = { name: 'write_note', description: '', parameters: {}, sideEffect: 'write', run: async () => '' }
 /** A minimal approval draft (the loop builds these from a tool + the resolution). */
 const draft = (args: Record<string, unknown> = {}): Parameters<NonNullable<RunAgentOptions['requestApproval']>>[0] => ({
-  caller: 'telegram',
+  caller: 'channel',
   target: { kind: 'tool', id: fakeTool.name, sideEffect: 'write' },
   actionLabel: fakeTool.name,
   argsPreview: args,

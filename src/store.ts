@@ -33,6 +33,7 @@ import {
   type ModelPickerTap
 } from './channelCommands'
 import { api as runtimeApi, initRuntime } from './runtime'
+import { uiText } from './localization'
 
 /**
  * The assistant's runtime engine lives in the host's owner-scoped session
@@ -183,6 +184,7 @@ class AssistantStore {
   private unloadPreparation: Promise<void> | null = null
   /** Pending approvals keyed by short requestId. */
   private pending = new Map<string, PendingEntry>()
+  private commandApprovals = new Set<() => void>()
   /** `${channelId}:${chatRef}` → the pending requestId awaiting that chat's reply. */
   private chatPending = new Map<string, string>()
   /** One-time approval tokens the loop minted, consumed by the bus gate (C6). */
@@ -210,7 +212,7 @@ class AssistantStore {
   /** The live guard runtime the command bus consults (installed on `window`). */
   private guardBridge: GuardRuntimeBridge = {
     resolve: (req) => resolveGuard(req, this.policy(), {}, this.dangerousState(), Date.now()),
-    requestApproval: (draft) => this.requestApproval(draft, 'ui', this.state.active?.id ?? 'app'),
+    requestApproval: (draft) => this.requestCommandApproval(draft),
     consumeToken: (token, binding) => {
       if (!this.approvalTokens.has(token) || this.approvalTokens.get(token) !== binding) return false
       return this.approvalTokens.delete(token)
@@ -324,6 +326,7 @@ class AssistantStore {
 
   private async flushForUnload(): Promise<void> {
     this.preparing = true
+    for (const cancel of this.commandApprovals) cancel()
     if (this.dangerousTimer) clearTimeout(this.dangerousTimer)
     this.dangerousTimer = null
     this.notify()
@@ -592,6 +595,36 @@ class AssistantStore {
     void this.api.assistant.saveGuardOverrides(req.chatId, ov).catch(() => {})
   }
 
+  private requestCommandApproval(draft: ApprovalDraft): Promise<boolean> {
+    if (this.preparing || this.disposed) return Promise.resolve(false)
+    return new Promise<boolean>((resolve) => {
+      const finish = (approved: boolean): void => {
+        if (!this.commandApprovals.delete(cancel)) return
+        clearTimeout(timer)
+        resolve(approved && !this.preparing && !this.disposed)
+      }
+      const cancel = (): void => finish(false)
+      const timer = setTimeout(cancel, IN_APP_APPROVAL_TTL)
+      this.commandApprovals.add(cancel)
+      void Promise.resolve().then(() => {
+        if (!this.commandApprovals.has(cancel)) return null
+        const { createElement } = this.api.React
+        return this.api.ui.confirm({
+          title: uiText('assistant.guard.confirmTitle'),
+          message: createElement('div', null,
+            createElement('p', null, uiText('assistant.guard.confirmMessage', { action: draft.actionLabel })),
+            createElement('pre', null, JSON.stringify(draft.argsPreview, null, 2)),
+            draft.diffPreview ? createElement('pre', null, draft.diffPreview) : null
+          ),
+          actions: [
+            { label: uiText('auto.77dfd2135f4d'), value: 'cancel', variant: 'ghost' },
+            { label: uiText('auto.c551e6cf17a5'), value: 'allow-once', variant: 'primary' }
+          ]
+        })
+      }).then((choice) => finish(choice === 'allow-once'), cancel)
+    })
+  }
+
   /**
    * Raise an approval prompt and resolve when the user (or channel reply, or
    * expiry) answers. Non-blocking: parking a run here flips its `awaitingApproval`
@@ -608,7 +641,7 @@ class AssistantStore {
       requestId,
       createdAt: now,
       expiresAt: now + ttl,
-      caller: channel ? 'telegram' : 'agent',
+      caller: channel ? 'channel' : 'agent',
       channelId: channel ? (origin as { channelId: string }).channelId : undefined,
       chatId,
       actionLabel: draft.actionLabel,
@@ -666,7 +699,7 @@ class AssistantStore {
     if (entry.timer) clearTimeout(entry.timer)
     for (const [key, id] of this.chatPending) if (id === requestId) this.chatPending.delete(key)
     // Drop the durable record (channel approvals only persist one).
-    if (entry.request.caller === 'telegram') void this.api.assistant.removePending(requestId).catch(() => {})
+    if (entry.request.caller === 'channel') void this.api.assistant.removePending(requestId).catch(() => {})
     if (expired) {
       const r = entry.request
       this.audit({
@@ -707,7 +740,7 @@ class AssistantStore {
     for (const r of stale) {
       this.audit({
         ts: Date.now(),
-        caller: 'telegram',
+        caller: 'channel',
         decision: 'expired',
         source: 'global-guard',
         reason: 'Pending approval recovered after restart',
@@ -1438,6 +1471,7 @@ class AssistantStore {
 
   dispose(): void {
     this.disposed = true
+    for (const cancel of this.commandApprovals) cancel()
     this.offChannel?.()
     this.offChannel = null
     this.offGuard?.()

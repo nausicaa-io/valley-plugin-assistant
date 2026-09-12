@@ -92,6 +92,14 @@ export function registerAssistantCommands(api: ValleyPluginApi): () => void {
   const patchSchema = schema({ title: stringSchema, pinned: { type: 'boolean' }, model: { anyOf: [{ type: 'null' }, schema({ provider: stringSchema, model: stringSchema }, ['provider', 'model'])] }, profileId: { type: ['string', 'null'] }, attachmentParser: { type: ['string', 'null'] }, commands: { type: 'array', items: schema({ name: stringSchema, prompt: stringSchema, description: { type: 'string' } }, ['name', 'prompt']) } })
   const offs = [
     registerHarnessCommands(api),
+    api.commands.register({
+      id: 'providers-reload',
+      label: 'Providers: Reload', labelKey: 'assistant.command.reloadProviders',
+      sideEffect: 'write',
+      usage: 'providers reload',
+      run: async () => ({ value: await api.backend.call<{ providers: Array<{ ready: boolean }> }>('ai.reloadProviders', {}), revert: null }),
+      formatCli: (value) => uiText('assistant.providers.reloaded', { count: (value as { providers: Array<{ ready: boolean }> }).providers.filter((provider) => provider.ready).length })
+    }),
     api.commands.register({ id: 'list-chats', label: 'Assistant: List conversations', labelKey: 'assistant.command.listChats', paletteSafe: false, sideEffect: 'read', run: async () => { await store.reloadThreads(); return store.getSnapshot().threads } }),
     api.commands.register({ id: 'read-chat', label: 'Assistant: Read a conversation', labelKey: 'assistant.command.readChat', paletteSafe: false, sideEffect: 'read', input: idInput, run: ({ id }) => readConversation(api, id) }),
     api.commands.register({ id: 'open-chat', label: 'Assistant: Open a conversation', labelKey: 'assistant.command.openChat', paletteSafe: false, sideEffect: 'read', input: idInput, run: async ({ id }) => { await readConversation(api, id); await store.openChat(id); api.workspace.openMainTab(); return { id } } }),

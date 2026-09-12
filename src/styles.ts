@@ -70,7 +70,8 @@ const CSS = `
 .assistant-msg.mine { align-items:flex-end; }
 .assistant-msg.theirs { align-items:flex-start; }
 .assistant-bubble { white-space:pre-wrap; word-break:break-word; color:var(--text-color); font-family:var(--body-font);
-  font-size:0.875rem; line-height:1.6; background:transparent; padding:0; border-radius:0; border:none; }
+  font-size:0.875rem; line-height:1.6; background:transparent; padding:0; border-radius:0; border:none;
+  -webkit-user-select:text; user-select:text; }
 .assistant-msg.mine .assistant-bubble {
   /* Opaque tint (NOT translucent --accent-tint-bg): a see-through fill makes the
      overlapping tail double up into a darker shard. This pre-mixed colour matches
@@ -116,7 +117,7 @@ const CSS = `
 .assistant-wikilink:hover, .assistant-bubble-md a.wikilink:hover { background:var(--accent-tint-bg); }
 /* Rendered Markdown inside a chat bubble: reset the bubble's pre-wrap, tighten the
  * shared .markdown-body rhythm so blocks sit snug in the small bubble. */
-.assistant-bubble-md { white-space:normal; }
+.assistant-bubble-md { white-space:normal; -webkit-user-select:text; user-select:text; }
 .assistant-bubble-md > :first-child { margin-top:0; }
 .assistant-bubble-md > :last-child { margin-bottom:0; }
 .assistant-bubble-md p { margin:0 0 8px; }
